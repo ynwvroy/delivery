@@ -11,6 +11,7 @@
         <h3>{{ product.name }}</h3>
         <p class="price">${{ product.price.toFixed(2) }}</p>
         <p class="desc">{{ product.description }}</p>
+        <button @click="addToCart(product)">Add to Cart</button>
       </div>
     </div>
   </div>
@@ -28,14 +29,40 @@ export default {
       error: ''
     }
   },
-  async created() {
-    try {
-      const res = await axios.get('http://localhost:5000/api/products')
-      this.products = res.data
-    } catch (err) {
-      this.error = 'Failed to load products'
-    } finally {
-      this.loading = false
+  created() {
+    axios
+      .get('http://localhost:5000/api/products')
+      .then(res => {
+        this.products = res.data
+      })
+      .catch(() => {
+        this.error = 'Failed to load products'
+      })
+      .finally(() => {
+        this.loading = false
+      })
+  },
+  methods: {
+    addToCart(product) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || []
+      const existing = cart.find(item => item._id === product._id)
+
+      if (existing) {
+        existing.quantity += 1
+      } else {
+        cart.push({
+          _id: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          description: product.description,
+          quantity: 1
+        })
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart))
+      window.dispatchEvent(new Event('storage')) // 🔄 Notify app of cart update
+      alert('✅ Added to cart')
     }
   }
 }

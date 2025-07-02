@@ -6,6 +6,7 @@ import cors from 'cors'
 // Route imports
 import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
+import orderRoutes from './routes/orderRoutes.js' // ✅ NEW: Order route
 
 dotenv.config()
 
@@ -18,6 +19,7 @@ app.use(express.json())
 // Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
+app.use('/api/orders', orderRoutes) // ✅ NEW: Order endpoint
 
 // Database and server startup
 const PORT = process.env.PORT || 5000
